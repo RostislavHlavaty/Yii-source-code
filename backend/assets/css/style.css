@@ -1,0 +1,46 @@
+.article-categories-scrollbox { height: 110px; overflow-y:scroll}
+.article-categories-scrollbox .list-group-item {padding: 4px 7px 2px 7px;}
+
+.custom-from-header-test-email {
+    display:none;
+}
+
+#ea-box-wrapper .box-body .box-title {
+    padding-top:5px!important;
+    font-size: 16px!important;
+}
+
+#ea-box-wrapper .box-body .box-body {
+    font-size: 12px!important;
+    min-height:100px;
+}
+
+.row-group-category .callout{
+    border-color: #3c8dbc;
+    border-left: 3px solid #3c8dbc;
+    margin-bottom:2px;
+}
+.row-group-category .callout h4{
+    color:#333333;
+    margin-bottom:0px;
+    padding-bottom:0px;
+    font-size:15px;
+}
+.row-group-category .box {
+    margin-top:-3px;
+}
+
+.price-plan-payment {
+    position: relative;
+    /* width: 90%; */
+    /* margin: 10px auto; */
+    background: #fff;
+    border: 1px solid #f4f4f4;
+    padding:10px;
+}
+
+.timeinfo {
+    padding: 5px;
+    font-size: 12px;
+    display:none;
+}

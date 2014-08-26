@@ -1,0 +1,225 @@
+#!/bin/bash
+
+##
+# This file is part of the MailWizz EMA application.
+# 
+# @package MailWizz EMA
+# @author Serban George Cristian <cristian.serban@mailwizz.com> 
+# @link http://www.mailwizz.com/
+# @copyright 2013-2014 MailWizz EMA (http://www.mailwizz.com)
+# @license http://www.mailwizz.com/license/
+# @since 1.0
+##
+ 
+printf "%s\n" "Waiting 2 seconds to init..."
+sleep 2
+
+# full path to the command dir
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+# name of this file
+FILE_NAME="$( basename "$0" )"
+
+# full path with file
+COMMAND_FILE_PATH="$DIR/$FILE_NAME"
+
+if [ ! -f "$COMMAND_FILE_PATH" ]; then 
+    printf "%s\n" "Cannot find correct command: $COMMAND_FILE_PATH"
+    exit 1
+fi
+
+# make sure we move in the working directory
+cd $DIR
+
+# console init path
+CONSOLE_PATH="$( cd ../../ && pwd )/console.php"
+
+# command line arguments
+PHP_PATH="/usr/bin/php"
+help=0
+
+# flag for binary search
+LOOKED_FOR_PHP=0
+
+# arguments init
+while getopts p:h: opt; do
+  case $opt in
+  p)
+      PHP_PATH=$OPTARG
+      LOOKED_FOR_PHP=1
+      ;;
+  h)
+      help=$OPTARG
+      ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+# help is available in all cases
+if [ $help -eq 1 ]; then 
+    printf "%s\n" "---------------------------------------------------------------"
+    printf "%s\n" "| Usage: ./"$FILE_NAME"                                        "
+    printf "%s\n" "| To force PHP CLI binary :                                    "
+    printf "%s\n" "| ./"$FILE_NAME" -p /path/to/php-cli/binary                    "
+    printf "%s\n" "---------------------------------------------------------------"
+    exit 0
+fi
+
+printf "%s\n" "Looking for php binary..."
+if [ "$PHP_PATH" ] && [ ! -f "$PHP_PATH" ] && [ "$LOOKED_FOR_PHP" -eq 0 ]; then
+    php_variants=( "php-cli" "php5-cli" "php5" "php" )
+    LOOKED_FOR_PHP=1
+    
+    for i in "${php_variants[@]}"
+    do
+        command -v $i >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            PHP_PATH="$(command -v $i)" 
+            break
+        fi
+    done
+fi
+
+if [ ! "$PHP_PATH" ] || [ ! -f "$PHP_PATH" ]; then
+    printf "%s\n" "Cannot find a valid php binary"
+    exit 1
+fi
+
+printf "%s\n" "Found a valid php binary at $PHP_PATH"
+
+# lock data
+LOCK_BASE_PATH="$( cd ../../../common/runtime && pwd )/shell-pids"
+LOCK_PATH="$LOCK_BASE_PATH/send-campaigns-daemon.pid"
+# PID_FILE="$LOCK_PATH/PID"
+
+# function to remove the lock file
+function remove_lock {
+    if [ -d "$LOCK_PATH" ]; then
+        rmdir "$LOCK_PATH" > /dev/null 2>&1
+        printf "%s\n" "Cleanup complete, removed the lock at $LOCK_PATH"
+    fi
+    exit 0
+}
+
+# function to remove php started processes
+php_pids=()
+function kill_php {
+    for i in "${php_pids[@]}"
+    do
+        if ps -p "$i" > /dev/null 2>&1; then
+            kill -15 "$i" > /dev/null 2>&1
+        fi
+    done
+}
+
+# create the base directory if does not exists
+if [ ! -d "$LOCK_BASE_PATH" ]; then
+    if ! mkdir -p "$LOCK_BASE_PATH" > /dev/null 2>&1; then
+        printf "%s\n" "Cannot create $LOCK_BASE_PATH"
+        exit 1
+    fi
+fi
+
+process_running=0
+if mkdir "$LOCK_PATH" > /dev/null 2>&1; then
+    process_running=0
+else
+    process_running=1
+fi
+
+printf "%s\n" "Checking to see if there is another instance of this process running"
+
+if [ $process_running -eq 1 ]; then
+    printf "%s\n" "Another instance of the process is already running or there is a stale pid file at $LOCK_PATH"
+    exit 0
+fi
+
+printf "%s\n" "There is no other instance of this process running, created the lock file $LOCK_PATH"
+
+# trap. see kill -l for available signals
+trap "kill_php;remove_lock" 1 2 3 9 15
+
+# load options from app
+SET_OPTION_COMMAND="$PHP_PATH -q $CONSOLE_PATH option set_option --name=%s --value=%s"
+GET_OPTION_COMMAND="$PHP_PATH -q $CONSOLE_PATH option get_option --name=%s --default=%s"
+app_status="$(printf "$GET_OPTION_COMMAND" "system.common.site_status" "offline")"
+parallel_processes_per_campaign="$(printf "$GET_OPTION_COMMAND" "system.cron.send_campaigns.parallel_processes_per_campaign" 3)"
+campaigns_offset="$(printf "$GET_OPTION_COMMAND" "system.cron.send_campaigns.campaigns_offset" 0)"
+campaigns_at_once="$(printf "$GET_OPTION_COMMAND" "system.cron.send_campaigns.campaigns_at_once" 10)"
+subscribers_at_once="$(printf "$GET_OPTION_COMMAND" "system.cron.send_campaigns.subscribers_at_once" 300)"
+sleep_time="$(printf "$GET_OPTION_COMMAND" "system.cron.send_campaigns.pause" 30)"
+
+app_status=$($app_status)
+parallel_processes_per_campaign=$($parallel_processes_per_campaign)
+campaigns_offset=$($campaigns_offset)
+campaigns_at_once=$($campaigns_at_once)
+subscribers_at_once=$($subscribers_at_once)
+sleep_time=$($sleep_time)
+
+if [ "$app_status" != "online" ]; then
+    printf "%s\n" "The application is offline, waiting for it to go online to proceed!"
+    remove_lock
+    exit 0
+fi
+
+# command placeholder
+COMMAND="$PHP_PATH -q $CONSOLE_PATH send-campaigns "
+
+# split the command vars for easier reading
+COMMAND_VARS[0]='--campaigns_offset=%d '
+COMMAND_VARS[1]='--campaigns_limit=%d '
+COMMAND_VARS[2]='--subscribers_offset=%d '
+COMMAND_VARS[3]='--subscribers_limit=%d '
+COMMAND_VARS[4]='--parallel_process_number=%d '
+COMMAND_VARS[5]='--total_parallel_process_number=%d '
+COMMAND_VARS[6]='--parallel_processes_count=%d '
+COMMAND_VARS[7]='--total_parallel_processes_count=%d '
+COMMAND_VARS[8]='--usleep=%d'
+
+for i in "${COMMAND_VARS[@]}"
+do
+    COMMAND="$COMMAND $i"
+done
+
+# counters
+k=0 
+i=0
+pp=0
+
+total_parallel_processes_count=$(( $campaigns_at_once *  $parallel_processes_per_campaign ));
+total_parallel_process_number=0;
+
+printf "%s\n" "Starting background processes..."
+while [ $i -lt $campaigns_at_once ]
+do
+    while [ $k -lt $parallel_processes_per_campaign ]
+    do
+        parallel_process_number=$(( $k + 1 ))
+        total_parallel_process_number=$(( $total_parallel_process_number + 1 ))
+        usleep=$(( $i * 10 + $k * 10 ))
+        subscribers_offset=$(( $subscribers_at_once * $k ))
+        CMD=$(printf "$COMMAND" $campaigns_offset 1 $subscribers_offset $subscribers_at_once $parallel_process_number $total_parallel_process_number $parallel_processes_per_campaign $total_parallel_processes_count $usleep)
+        $CMD > /dev/null 2>&1 &
+        php_pids+=($!)
+        k=$(( $k + 1 ))
+        pp=$(( $pp + 1 ))
+    done
+    k=0
+    i=$(( $i + 1 ))
+    campaigns_offset=$(( $campaigns_offset + 1 ))
+done
+
+printf "%s\n" "Waiting for $pp background processes to finish..."
+wait
+printf "%s\n" "Done waiting, all $pp background processes are done!"
+
+printf "\n%s\n" "Sending a new process in background..."
+$COMMAND_FILE_PATH -p "$PHP_PATH" > /dev/null 2>&1 &
+printf "%s\n" "The new process has been sent in background."
+
+printf "%s\n" "Removing the existing lock for this process."
+remove_lock
+
+# remove_lock will exit anyway
+exit 0

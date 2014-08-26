@@ -1,0 +1,307 @@
+--- -------------------------------------------
+--- Version 1.3.4.5 - 2014-06-15
+--- -------------------------------------------
+[ADD] - Ability to inject email footers in campaigns, globally but also for customer groups
+[ADD] - Added ability to place offline orders
+[ADD] - Added "layout_footer_html" action hook to push html in app footer if needed
+[ADD] - New extension, Html Blocks to push html content
+[ADD] - Multiselect for list fields
+[ADD] - Added currecies management
+[ADD] - Added taxes management
+[ADD] - Added countries management
+[ADD] - Added zones management
+[ADD] - Added database importer
+[ADD] - Added ability to manage order notes
+[ADD] - Added domain policies for delivery servers
+[ADD] - Added ability to send campaigns to multiple lists/segments at once
+[ADD] - Added ability to sync email lists
+[ADD] - Added landing page for when deleting a list to show everything that will actually be removed
+[ADD] - Added email notifications for users/customers when a order is made
+[ADD] - Added transactional emails support
+[ADD] - Added transactional emails API endpoint
+[ADD] - Added new cron job to process the transactional emails
+[ADD] - Ability to change subscriber custom field upon campaign open, useful to segment based on campaign opens
+[ADD] - Ability to change subscriber custom field upon campaign click on certain url, useful to segment based on campaign link clicks
+[ADD] - Added the abilitry to retry failed sends up to 3 times and then give up
+[ADD] - Added the ability to send only plain text emails
+[ADD] - Added new filter hook: mailer_not_allowed_custom_from_domain_patterns
+[ADD] - Added ability to add database port and use unix socket to the installer
+[BUG] - Dropdown custom field invalid row addition
+[CHG] - Payment gateways logic has been changed
+[CHG] - Removed ability to add custom from header since it caused multiple problems. the system will now detect this by it's own.
+[CHG] - All DeliveryServer classes where changed drastically
+[CHG] - The mailers code has changed
+[CHG] - Changed probability algorithm for delivery server picking
+[CHG] - Changed the way picking datetime for campaign sending works
+[CHG] - Only unique email addresses are counted against the customer quota for subscribers, duplicates are counted as a single email
+[CHG] - Guest actions, such as forgot password, registration, etc, for both users and customers, will use the transactional emails feature
+[CHG] - The campaign delivery log table got two new columns, retries and max_retries
+[CHG] - Small changes to the installer
+
+--- -------------------------------------------
+--- Version 1.3.4.4 - 2014-05-21
+--- -------------------------------------------
+[ADD] - Added Minutes / Hours to autoresponders timeframe
+[ADD] - Added price plans in the monetization module
+[ADD] - Added payment handling into the monetization module
+[ADD] - Added orders handling in the monetization module
+[ADD] - Added promo codes in the monetization module
+[ADD] - Added Paypal Payment Gateway extension for payment in the monetization module
+[ADD] - Ability to require company info on registration
+[BUG] - Fixed various other small issues
+[ENH] - Improved autoresponder logic
+
+--- -------------------------------------------
+--- Version 1.3.4.3 - 2014-05-11
+--- -------------------------------------------
+[ADD] - Added the mutex component for locking processes
+[ADD] - console_command_daily action hook
+[ADD] - Added autoresponders
+[ADD] - Added ability to create campaign groups
+[ADD] - Added ability to group campaigns
+[ADD] - Added customer groups with permissions, limits, quotas, actions, etc
+[ADD] - Added ability to reset the sending quota for customers
+[ADD] - Added ability to reset the sending quota for customer groups
+[ADD] - Added ability to add dropdowns for list custom fields
+[ADD] - Added new extension to allow custom assets (css/js) for list forms
+[ADD] - Added new extension to allow custom webhooks for list form data
+[ADD] - Added ability to move/copy subscribers between the lists based on campaign urls clicks
+[ADD] - Added ability to move/copy subscribers between the lists based on campaign opens
+[ADD] - Ability to lock servers so customer cannot change them
+[ADD] - Ability to associate servers with customers from backend area
+[ADD] - New sending quota system, as part of group perms
+[ADD] - Registration system and backend area to control it
+[BUG] - Delivery servers reseted to inactive because of bounce servers
+[CHG] - All cron jobs are using the new mutex component for locking
+[CHG] - Bounce/FBL command altered once again
+[CHG] - Switched from `which` to `command -v` for checking linux commands availability
+[ENH] - Improved parallel delivery command
+[ENH] - Campaigns landing page shows more info now
+[UPD] - Updated CKEDITOR extension
+
+--- -------------------------------------------
+--- Version 1.3.4.2 - 2014-04-17
+--- -------------------------------------------
+[ADD] - Added imap timeout for bounce/fbl processing
+[ADD] - Ability to import html pages from url for campaign templates
+[ADD] - Ability to copy lists
+[ADD] - Added PHPMailer as a faster alternative to swiftmailer
+[ADD] - Ability to select which mailer to use
+[ADD] - Import/Export for backend blacklisted emails
+[ADD] - Added ability to run bulk actions from various sources(file/text area) against list subscribers
+[ADD] - Ability to embed images in template instead of loading them remotely
+[ADD] - Ability to minify the email templates for easier delivery
+[CHG] - Rewrote the mailers logic to be able to use more than one mailer
+[CHG] - The MailSender class has been deprecated, if you extended or rely on it externally please update your code!!!
+[ENH] - Paused campaigns can now be edited
+[ENH] - Improved processing time for sending campaigns
+[ENH] - Updated SwiftMailer to latest version
+[ENH] - Better file extension support for mimes via Yii::app()->extensionMime->get('ext');
+
+--- -------------------------------------------
+--- Version 1.3.4.1 - 2014-03-20 
+--- -------------------------------------------
+[BUG] - Customer login page fix
+[BUG] - Temporary dir issues
+[BUG] - Cron exec data retrival
+
+--- -------------------------------------------
+--- Version 1.3.4 - 2014-03-16 
+--- -------------------------------------------
+[ADD] - Ability to process campaigns in parallel (high delivery speed)
+[ADD] - Ability for send-campaigns command to process recursive
+[ADD] - Ability for customers to add their own delivery and bounce servers
+[ADD] - Ability for admins to control customer server options
+[ADD] - Added "option" command to fetch app options from command line
+[ADD] - Option for the admin to set default page size(pagination) for backend and customers area
+[ADD] - Option for customers to select the page size(pagination)
+[ADD] - Send-campaigns command is now aware of the system status and will restore states if improper shutdown
+[ADD] - Notification system so that you know when a new version is available for download
+[ADD] - Option to decide if mime types detection is enabled for importing csv files
+[ADD] - before_view_file_content and after_view_file_content action hooks
+[ADD] - before_active_form, before_active_form_fields, after_active_form_fields, after_active_form action hooks
+[ADD] - before_grid_view, after_grid_view action hooks
+[ADD] - grid_view_properties and grid_view_columns filter hooks
+[ADD] - Clear documentation in view files
+[ADD] - controller_action_save_data filter hook
+[ADD] - register_scripts and register_styles filter hooks
+[ADD] - New extension that allows redirecting for list forms to custom urls
+[ADD] - Full RTL support based on locale
+[ADD] - Added NetDnsHelper class file
+[ADD] - Customers can have hourly quota for sending emails now
+[ADD] - Email Feedback Loop(FBL/ARF) processing for customer and user
+[ADD] - Console command (feedback-loop-handler) to process feedback emails
+[ADD] - Backend area to control customer hourly quota counters against delivery(campaigns/tests/lists)
+[ADD] - New console command(cron job), called "daily" which replaces "process-subscribers" and adds new logic
+[ADD] - Backend area now shows app version, processing time and memory usage
+[BUG] - Fixed a bug where not all themes instances were returned
+[BUG] - Fixed a bug where app reported writeabale files when they were not
+[BUG] - Fixed a bug in MailSender where invalid value was returned
+[BUG] - HooksManager allowed same callback to be bound multiple times to an action/filter
+[CHG] - Various changes in the application hooks
+[CHG] - Re-arranged backend left side items and settings
+[CHG] - The hook customer_campaigns_overview_after_tracking_stats will now receive a CAttributeCollection as only param
+[CHG] - delivery_server_before_send_email and delivery_server_after_send_email hooks are changed now
+[CHG] - The command "process-subscribers" has been removed, all logic placed into the new "daily" command
+[CHG] - Refactored left side navigation in backend and customer area
+[ENH] - Improved bounce handling detection rules
+[ENH] - Improved command for bounce handling
+[ENH] - Improved CLI detection
+[ENH] - All command line calls where updated to use a new structure
+[ENH] - Install will use exec() if available to detect your PHP binary
+[ENH] - Multiple enhancements for delivery servers
+[ENH] - Improved the CSS parser
+[ENH] - Improved importing speed(big time!)
+[ENH] - Remote blacklist detection will use dig via exec() if available with fallback on php implementation
+[ENH] - Faster installer and upgrade process (mysql queries changes)
+[ENH] - BounceHandler now makes difference between FBL and Bounces
+[ENH] - Refactored the Option models
+[MSC] - Many other small improvements/bug fixes and enhancements
+
+--- -------------------------------------------
+--- Version 1.3.3 - 2014-02-02
+--- -------------------------------------------
+[ADD] - Ability to add custom headers for each delivery server
+[ADD] - Ability to set custom "From" header for delivery servers that support it
+[ADD] - Backend area to manage the application log
+[ADD] - Added Campaign Stats Processor, attachable to any campaign to extract stats
+[ADD] - Ability to export basic campaign stats
+[ADD] - Ability to set plain text version of email manually
+[ADD] - Ability to remove bounced emails per campaign basis from campaign reports area
+[ADD] - Backend area to control which campaign template tags are required
+[ADD] - Backend area to control whether the customers can choose delivery servers for campaigns
+[BUG] - Delivery via pickup directory fix
+[BUG] - Campaign servers were not copied when campaign duplicated
+[BUG] - API PUT/DELETE Methods failed under certain circumstances.
+[CHG] - Removed a few tracking widgets in favor of simple view files based on Campaign Stats Processor
+[CHG] - Bounce policy changed, once an email returns it is considered hard bounce until it proves to be a soft bounce
+[ENH] - Better generation of plain text emails when requested
+[ENH] - Upload zip file via API for when creating a campaign and/or a template.
+[ENH] - Updated the campaigns/lists/templates endpoint and the PHP SDK (see examples folder in sdk)
+[ENH] - Full screen for Activity Map Extension
+[ENH] - Translation messages are collected from API app too
+
+--- -------------------------------------------
+--- Version 1.3.2 - 2014-01-19
+--- -------------------------------------------
+[ADD] - Ability to blacklist entire domain by adding *@domain.com
+[ADD] - Check emails against remote DNSBL services
+[ADD] - Backend area settings for email spam check against spam lists
+[ADD] - Ability to use local sendmail as a delivery server
+[ADD] - Ability to use php's inbuilt mail() function to deliver email
+[ADD] - Ability to deliver email via Pickup Directory method
+[ADD] - Ability for each campaign to be restarted if it gets stuck
+[ADD] - Ability to choose delivery servers per campaign basis
+[ADD] - Ability to add campaign attachments
+[ADD] - Settings area to control campaign attachments
+[ADD] - Template API endpoint now returns the template screenshot too
+[BUG] - Fixed a bug where email was imported even if blacklisted
+[BUG] - Fixed a bug where tracking links will not work when sending multiple campaigns in paralel 
+[CHG] - Blacklisted emails are not exported anymore
+[CHG] - Removed reset area from backend and console commands
+[ENH] - Added a few missing translation strings
+[ENH] - Better behavior for various problematic MySQL configurations
+
+--- -------------------------------------------
+--- Version 1.3.1 - 2013-12-27
+--- -------------------------------------------
+
+[ADD] - Option to copy/duplicate campaigns
+[ADD] - Auto-generate plain text campaign email based on the html version
+[ADD] - Per campaign option to turn on/off plain text emails, on by default
+[ADD] - Campaign overview delivery rate estimate
+[ADD] - Campaign overview delivery completition estimate
+[ADD] - Option to be notified when campaign finish sending, email will contain various stats
+[ADD] - Campaign spam score check
+[ADD] - Installer can now create the first customer if desired
+[BUG] - When single opt-out enabled, unsubscribes were not tracked
+[BUG] - Frontend missing notify.js script file
+[CHG] - Campaign last open is based on open tracking rather than being based on campaign table column
+[ENH] - Gmail storing images fix for tracking opens
+[ENH] - Import / Export improvements
+[ENH] - Hidden form fields are now visible to customers when updating/creating subscribers
+[ENH] - Better handling of sending campaigns from command line
+[ENH] - Better visual number formatting across the customer app
+[ENH] - Better hourly limits and delivery server availability
+[ENH] - Better installer
+[ENH] - Updated twitter bootstrap to latest version
+[ENH] - Updated ckeditor to latest version
+[ENH] - Updated Urlify library
+
+--- -------------------------------------------
+--- Version 1.3 - 2013-12-10
+--- -------------------------------------------
+
+[ADD] - Themes support
+[ADD] - Ability to use remote XML(RSS) feeds inside campaigns
+[ADD] - Ability to use remote JSON feeds inside campaigns
+[ADD] - New per campaign options to decide if enable url tracking, xml/json feeds
+[ADD] - Support for bulk actions for subscribers (subscribe, unsubscribe, delete)
+[ADD] - You can choose now between single/double opt-in/opt-out for each list
+[ADD] - Iframe embed for forms
+[CHG] - Re-arranged backend left menu
+[ENH] - Better campaign url tracking
+[ENH] - Campaign stats visible only if options for those stats are enabled
+[ENH] - Switch to database sessions instead of native sessions
+[ENH] - Campaign schedule is now shown in customer locales
+[ENH] - Fixed various small bugs and text typos
+
+--- -------------------------------------------
+--- Version 1.2 - 2013-12-01
+--- -------------------------------------------
+
+[ADD] - Added campaign activity map extension (show clicks, opens and unsubscribes on a map)
+[ADD] - Added ip location services backend area
+[ADD] - Added the "Ip location - ipinfodb.com" location service extension
+[ADD] - Added the "Ip location - ipinfo.io" location service extension
+[ADD] - Added the "Ip location - freegeoip.net" location service extension
+[ADD] - Added the "Ip location - locatorhq.com" location service extension
+[ADD] - Added the "Ip location - telize.com" location service extension
+[ADD] - File manager for ckeditor (users and customers)
+[ADD] - Customers have their own web space for campaign assets now, separate of template files
+[ADD] - Now it's possible to upload templates from campaigns area too
+[ADD] - Unsubscribes widget in campaign overview area
+[ADD] - Unsubscribes area for campaign reports
+[ADD] - New cron job to check subscribers (unsubscribed and unconfirmed)
+[ADD] - New settings area for check subscribers cron
+[ADD] - Added email fallback for password sending in backend/customer area
+[ADD] - Added "Update Workers" that will carry the hard work for each version update
+[CHG] - Create/Update/Delete subscribers from customer panel will not log messages anymore
+[CHG] - Removed "total for delivery" from stats since it was confusing always changing depending on the list/segment subscribers
+[CHG] - List subscribers api enpoint now returns all subscribers, no matter the status
+[ENH] - Translate extension will now collect messages from console application too
+[ENH] - Added new hooks for frontend campaign open, campaign link track and unsubscribe track
+[ENH] - CKeditor got a settings page(settings for file manager)
+[ENH] - Customers and users got their own uids now
+[ENH] - Subscribers status can now be edited
+[ENH] - Subscribers can now be grouped and searched by status
+[ENH] - Campaign overview boxes re-arranged
+[ENH] - Improved the subscribe/unsubscribe process
+
+--- -------------------------------------------
+--- Version 1.1 - 2013-11-24
+--- -------------------------------------------
+
+[ADD] - Added multi-language, translation and internationalization support
+[ADD] - Added the Translate extension(collect messages for easier translation)
+[ADD] - Added CommonHelper class, AssetsPath class, LanguageHelper class
+[ADD] - Added the "version update" backend area and the logic to perform version updates
+[BUG] - Fixed a bug where customers could see other customers templates when creating campaigns
+[BUG] - Fixed a bug where customers could see other customers lists when creating campaigns
+[CHG] - Renamed the HttpRequest class into BaseHttpRequest to avoid naming collision when pecl HttpRequest class is installed.
+[CHG] - Modified view files and controllers to split translations in multiple files rather than large ones.
+[CHG] - Moved config data into it's own separate file(added main-custom.php config file) for better handling on updates.
+[ENH] - Updated bootstrap to latest version
+[ENH] - Added the ability to return the main app instance instead of running it.
+[ENH] - Extensions can now register their own landing page for settings/info/etc
+[ENH] - Split the DB schema and inserts for better handling
+[ENH] - API will become unavailable if site offline for update/maintenance, ignoring the api status setting.
+[ENH] - Console tasks will stop when site offline and restart when site online.
+[ENH] - Datepicker / CKeditor make use of the multi-language feature
+
+
+--- -------------------------------------------
+--- Version 1.0 - 2013-11-15
+--- -------------------------------------------
+
+- Initial release
